@@ -1,5 +1,6 @@
 import os
 import logging
+import asyncio
 from pyrogram import Client
 from dotenv import load_dotenv
 from nezukohelper.config import bot
@@ -18,14 +19,14 @@ load_dotenv()
 # Import ALL handlers
 from nezukohelper.handlers import *
 
-if __name__ == "__main__":
+async def main():
     try:
-        # Test MongoDB connection
-        is_db_connected = await test_db_connection()  # ✅ await जरूरी है
-        if not is_db_connected:
-            logger.error("❌ MongoDB Connection Failed! Exiting...")
-            exit(1)
+        # Test MongoDB connection (await it properly)
+        await test_db_connection()
         logger.info("🌸 Nezuko Helper Started!")
-        await bot.run()  # ✅ await जोड़ें
+        bot.run()
     except Exception as e:
         logger.error(f"FATAL ERROR: {str(e)}")
+
+if __name__ == "__main__":
+    asyncio.run(main())  # Ensure the async function runs properly
