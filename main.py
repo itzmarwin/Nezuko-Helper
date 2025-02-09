@@ -1,7 +1,7 @@
 import os
 import logging
 import asyncio
-from pyrogram import Client
+from pyrogram import Client, idle  # Import idle
 from dotenv import load_dotenv
 from nezukohelper.config import bot
 from nezukohelper.utils.database import test_db_connection
