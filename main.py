@@ -21,8 +21,11 @@ from nezukohelper.handlers import *
 if __name__ == "__main__":
     try:
         # Test MongoDB connection
-        test_db_connection()
+        is_db_connected = await test_db_connection()  # ✅ await जरूरी है
+        if not is_db_connected:
+            logger.error("❌ MongoDB Connection Failed! Exiting...")
+            exit(1)
         logger.info("🌸 Nezuko Helper Started!")
-        bot.run()
+        await bot.run()  # ✅ await जोड़ें
     except Exception as e:
         logger.error(f"FATAL ERROR: {str(e)}")
