@@ -17,22 +17,27 @@ db = None
 try:
     client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
     db = client.NezukoHelper
-    logger.info("🌸 Successfully connected to MongoDB!")
+    logger.info("🌸 MongoDB Connection Successful!")
 except Exception as e:
-    logger.error(f"❌ MongoDB connection failed: {str(e)}")
+    logger.error(f"❌ MongoDB Connection Failed: {e}")
+    client = None
+    db = None
 
-# Database collections
-users = db.users if db else None
-groups = db.groups if db else None
-warns = db.warns if db else None
-filters = db.filters if db else None
-afk = db.afk if db else None
-gbans = db.gbans if db else None
-couples = db.couples if db else None
-broadcasts = db.broadcasts if db else None
-messages = db.messages if db else None
+# Database collections (SAFE INITIALIZATION)
+users = db.users if db is not None else None
+groups = db.groups if db is not None else None
+warns = db.warns if db is not None else None
+filters = db.filters if db is not None else None
+afk = db.afk if db is not None else None
+gbans = db.gbans if db is not None else None
+couples = db.couples if db is not None else None
+broadcasts = db.broadcasts if db is not None else None
+messages = db.messages if db is not None else None
 
 async def test_db_connection():
+    if client is None:
+        logger.error("❌ MongoDB client not initialized!")
+        return False
     try:
         await client.admin.command('ping')
         logger.info("🌸 MongoDB connection verified!")
