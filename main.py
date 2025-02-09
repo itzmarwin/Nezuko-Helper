@@ -24,9 +24,15 @@ async def main():
         # Test MongoDB connection (await it properly)
         await test_db_connection()
         logger.info("🌸 Nezuko Helper Started!")
-        bot.run()
+        
+        # Start Pyrogram bot in async mode
+        await bot.start()
+        await idle()  # Keeps the bot running
     except Exception as e:
         logger.error(f"FATAL ERROR: {str(e)}")
+    finally:
+        await bot.stop()
 
 if __name__ == "__main__":
-    asyncio.run(main())  # Ensure the async function runs properly
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())  # Correct way to run an async function
