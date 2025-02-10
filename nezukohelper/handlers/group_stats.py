@@ -14,7 +14,6 @@ STATS_BUTTONS = InlineKeyboardMarkup([
 
 @bot.on_message(filters.command("gstat"))
 async def group_stats(_, message: Message):
-    # सिर्फ groups में allow करें
     if message.chat.type not in ["group", "supergroup"]:
         return await message.reply("❌ This command works only in groups!")
     
@@ -67,13 +66,12 @@ async def close_stats(_, query):
         await query.answer("⚠️ Message already deleted!")
 
 @bot.on_message(
-    filters.group & 
-    ~filters.service & 
-    ~filters.command & 
-    ~filters.edited  # ✅ Edited messages को ignore करें
+    (filters.group) & 
+    (~filters.service) & 
+    (~filters.command) & 
+    (~filters.edited)  # ✅ सभी filters parentheses में
 )
 async def track_message(_, message: Message):
-    # Anonymous users (channels/admins) को skip करें
     if not message.from_user:
         return
     
