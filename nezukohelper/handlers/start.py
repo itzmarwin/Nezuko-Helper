@@ -2,10 +2,13 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from nezukohelper.config import bot
 from nezukohelper.utils.helpers import emoji
+import logging
+
+logger = logging.getLogger(__name__)
 
 # ========== START MENU ==========
 START_TEXT = (
-    "🌸 **Konnichiwa!** I'm **Nezuko Helper**~!\n"
+    f"{emoji('🌸')} **Konnichiwa!** I'm **Nezuko Helper**~\n"
     "I can manage groups, play games, and keep things fun!\n"
     "Use the buttons below to explore my commands. 💖"
 )
@@ -59,32 +62,45 @@ HELP_TEXTS = {
 }
 
 @bot.on_message(filters.command("start"))
-async def start_cmd(_, message):
-    await message.reply_photo(
-        photo="https://telegra.ph/file/6b1c56f02fcad5ce73708-906cca241fa16c959b.jpg",  # Replace with your image
-        caption=START_TEXT,
-        reply_markup=START_BUTTONS
-    )
-
-@bot.on_callback_query()
-async def handle_buttons(_, query):
-    data = query.data
-    
-    if data == "help_menu":
-        await query.message.edit(
-            "📚 **Command Categories**\nChoose a category:",
-            reply_markup=HELP_BUTTONS
-        )
-    elif data == "owner_info":
-        await query.answer("👑 Owner: @Itz_Marv1n\nDM for support!", show_alert=True)
-    elif data.startswith("help_"):
-        await query.message.edit(
-            HELP_TEXTS[data],
-            reply_markup=HELP_BUTTONS
-        )
-    elif data == "back_start":
-        await query.message.edit(
-            START_TEXT,
+async def start_cmd(client, message):
+    try:
+        await message.reply_photo(
+            photo="https://telegra.ph/file/6b1c56f02fcad5ce73708-906cca241fa16c959b.jpg",
+            caption=START_TEXT,
             reply_markup=START_BUTTONS
         )
-    await query.answer()
+    except Exception as e:
+        logger.error(f"Start command error: {str(e)}")
+        await message.reply("❌ Failed to load start menu!")
+
+@bot.on_callback_query(filters.regex(r"help_|back_start|owner_info"))
+async def handle_buttons(client, query):
+    try:
+        data = query.data
+        
+        if data == "help_menu":
+            await query.message.edit(
+                "📚 **Command Categories**\nChoose a category:",
+                reply_markup=HELP_BUTTONS
+            )
+        elif data == "owner_info":
+            await query.answer("👑 Owner: @Itz_Marv1n\nDM for support!", show_alert=True)
+            return  # No message edit needed
+        elif data.startswith("help_"):
+            if data not in HELP_TEXTS:
+                return await query.answer("⚠️ Invalid menu!", show_alert=True)
+                
+            await query.message.edit(
+                HELP_TEXTS[data],
+                reply_markup=HELP_BUTTONS
+            )
+        elif data == "back_start":
+            await query.message.edit(
+                START_TEXT,
+                reply_markup=START_BUTTONS
+            )
+        
+        await query.answer()
+    except Exception as e:
+        logger.error(f"Button handler error: {str(e)}")
+        await query.answer("❌ Something went wrong!", show_alert=True)
