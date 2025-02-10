@@ -5,7 +5,7 @@ import traceback
 from pyrogram import idle
 from dotenv import load_dotenv
 from nezukohelper.config import bot
-from nezukohelper.utils.database import init_db  # Updated import
+from nezukohelper.utils.database import init_db
 
 # Logging Configuration
 logging.basicConfig(
@@ -21,7 +21,7 @@ async def main():
         load_dotenv()
         logger.info("🌸 Environment variables loaded")
 
-        # Step 2: Initialize Database First
+        # Step 2: Initialize Database
         logger.info("🔌 Initializing database...")
         if not await init_db():
             logger.error("❌ Critical: DB Connection Failed!")
@@ -29,11 +29,11 @@ async def main():
 
         # Step 3: Import Handlers After DB Init
         logger.info("📦 Loading handlers...")
-        from nezukohelper.handlers import (  # All handlers
+        from nezukohelper.handlers import (
             start, afk, stickers, group_stats,
-            warn, zombies, filters, tagall,
-            games, couple, broadcast, userinfo,
-            gban, automod, leaderboard, ban
+            warn, zombies, tagall, games,
+            couple, broadcast, userinfo, gban,
+            automod, leaderboard, ban
         )
 
         # Step 4: Start Bot
@@ -42,7 +42,7 @@ async def main():
 
         # Step 5: Send Startup Notification
         await bot.send_message(
-            os.getenv("LOG_CHAT"),  # Use configurable chat
+            os.getenv("LOG_CHAT"),  # Use LOG_CHAT from .env
             "🌸 **Bot Started Successfully!**"
         )
 
