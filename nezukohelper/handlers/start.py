@@ -11,14 +11,14 @@ START_TEXT = (
 )
 
 START_BUTTONS = InlineKeyboardMarkup([
-    [InlineKeyboardButton("➕ Add to Group", url="https://t.me/YourBot?startgroup=true")],
+    [InlineKeyboardButton("➕ Add to Group", url="https://t.me/nezukohelperbot?startgroup=true")],
     [
         InlineKeyboardButton("📜 Commands", callback_data="help_menu"),
         InlineKeyboardButton("👑 Owner", callback_data="owner_info")
     ],
     [
-        InlineKeyboardButton("💬 Support", url="https://t.me/YourSupportGroup"),
-        InlineKeyboardButton("📢 Channel", url="https://t.me/YourChannel")
+        InlineKeyboardButton("💬 Support", url="https://t.me/Anime_group_chat_en"),
+        InlineKeyboardButton("📢 Channel", url="https://t.me/Samurais_network")
     ]
 ])
 
@@ -61,7 +61,7 @@ HELP_TEXTS = {
 @bot.on_message(filters.command("start"))
 async def start_cmd(_, message):
     await message.reply_photo(
-        photo="https://telegra.ph/file/nezuko-banner.jpg",  # Replace with your image
+        photo="https://telegra.ph/file/6b1c56f02fcad5ce73708-906cca241fa16c959b.jpg",  # Replace with your image
         caption=START_TEXT,
         reply_markup=START_BUTTONS
     )
@@ -76,7 +76,7 @@ async def handle_buttons(_, query):
             reply_markup=HELP_BUTTONS
         )
     elif data == "owner_info":
-        await query.answer("👑 Owner: @YourUsername\nDM for support!", show_alert=True)
+        await query.answer("👑 Owner: @Itz_Marv1n\nDM for support!", show_alert=True)
     elif data.startswith("help_"):
         await query.message.edit(
             HELP_TEXTS[data],
