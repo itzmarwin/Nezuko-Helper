@@ -65,11 +65,12 @@ async def close_stats(_, query):
     except:
         await query.answer("⚠️ Message already deleted!")
 
-@bot.on_message(
+@bot.on_message(  # ✅ Opening parenthesis
     (filters.group) & 
     (~filters.service) & 
-    (~filters.command) &  # ✅ सही syntax (कोष्ठक **नहीं**)
+    (~filters.command) & 
     (~filters.edited)
+)  # ✅ Closing parenthesis जोड़ें
 async def track_message(_, message: Message):
     if not message.from_user:
         return
