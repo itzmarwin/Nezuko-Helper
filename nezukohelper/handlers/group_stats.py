@@ -67,9 +67,9 @@ async def close_stats(_, query):
 
 @bot.on_message(
     (filters.group) & 
-    (~filters.service) & 
-    (~filters.command()) &  # ✅ सही syntax
-    (~filters.edited())
+    (~filters.service) &   # ✅ बिना कोष्ठक के
+    (~filters.command) &   # ✅ बिना कोष्ठक के
+    (~filters.edited)      # ✅ Pyrogram v2.0.106+ में सपोर्टेड
 )
 async def track_message(_, message: Message):
     if not message.from_user:
