@@ -1,5 +1,4 @@
 from pyrogram import filters
-from pyrogram.types import Message
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from nezukohelper.config import bot
 from nezukohelper.utils.database import messages
@@ -69,7 +68,7 @@ async def close_stats(_, query):
 @bot.on_message(
     (filters.group) & 
     (~filters.service) & 
-    (~filters.command()) &  # ✅ सही syntax
+    (~filters.command) &  # ❌❌🚫 **() हटाएँ** 🚫❌❌
     (~filters.edited)
 )
 async def track_message(_, message: Message):
