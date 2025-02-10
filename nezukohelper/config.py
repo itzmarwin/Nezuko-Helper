@@ -2,27 +2,28 @@ import os
 from pyrogram import Client
 from dotenv import load_dotenv
 
-load_dotenv()  # Load .env file
+load_dotenv()  # .env file load करें
 
-# Initialize Pyrogram Client
+# Pyrogram Client Configuration
 bot = Client(
     "NezukoHelper",
-    api_id=int(os.getenv("API_ID")),
+    api_id=int(os.getenv("API_ID")),  # API_ID must be integer
     api_hash=os.getenv("API_HASH"),
-    bot_token=os.getenv("BOT_TOKEN")
+    bot_token=os.getenv("BOT_TOKEN"),
+    in_memory=True  # Session को memory में रखेगा
 )
 
-# MongoDB Configuration
+# MongoDB Configuration (अलग file में होना चाहिए)
 MONGO_URI = os.getenv("MONGO_URI")
-LOG_CHAT = int(os.getenv("LOG_CHAT", -1001234567890))  # Default log chat ID
+LOG_CHAT = os.getenv("LOG_CHAT")  # String के रूप में लें
 
 async def test_db_connection():
+    """Database connection को utils/database.py में shift करें"""
+    from motor.motor_asyncio import AsyncIOMotorClient
     try:
-        from motor.motor_asyncio import AsyncIOMotorClient
         client = AsyncIOMotorClient(MONGO_URI)
         await client.admin.command('ping')
-        print("🌸 MongoDB Connection Verified!")
         return True
     except Exception as e:
-        print(f"❌ MongoDB Error: {str(e)}")
+        print(f"MongoDB Connection Failed: {str(e)}")
         return False
