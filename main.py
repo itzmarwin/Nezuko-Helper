@@ -1,7 +1,7 @@
 import os
 import logging
 import traceback
-from pyrogram import Client
+from pyrogram import idle  # Pyrogram के लिए ज़रूरी
 from dotenv import load_dotenv
 from nezukohelper.utils.database import test_db_connection
 from nezukohelper.config import bot
@@ -10,9 +10,7 @@ from nezukohelper.config import bot
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
-    handlers=[
-        logging.StreamHandler(),  # Logs to console
-    ]
+    handlers=[logging.StreamHandler()]
 )
 logger = logging.getLogger(__name__)
 
@@ -22,38 +20,34 @@ async def main():
         load_dotenv()
         logger.info("🌸 Loading environment variables...")
 
-        # Test MongoDB Connection
+        # MongoDB Connection Test
         logger.info("🔌 Testing MongoDB connection...")
-        db_status = await test_db_connection()
-        if not db_status:
+        if not await test_db_connection():
             logger.error("❌ MongoDB Connection Failed! Exiting...")
             return
 
-        # Import All Handlers
-        logger.info("📦 Importing handlers...")
-        from nezukohelper.handlers import (  # Explicit imports
-            afk, stickers, warn, group_stats, zombies,
-            filters, tagall, games, couple, sudo,
-            broadcast, userinfo, gban, automod,
-            logging, start, leaderboard, ban, logger_group
+        # Import Handlers (Register करने के लिए)
+        logger.info("📦 Importing and registering handlers...")
+        from nezukohelper.handlers import (
+            start, afk, stickers, group_stats  # और अन्य ज़रूरी handlers
         )
 
         # Start the Bot
         logger.info("🚀 Starting Nezuko Helper Bot...")
         await bot.start()
-        
-        # Send test message to yourself
+
+        # Send startup message
         await bot.send_message("me", "🌸 **Bot Started Successfully!**")
-        logger.info("✅ Bot is active! Sent confirmation message.")
-        
+        logger.info("✅ Bot is active!")
+
         # Keep the bot running
-        await bot.run()
+        await idle()  # Pyrogram के लिए सही method
 
     except Exception as e:
         logger.critical(f"🔥 CRITICAL ERROR: {str(e)}")
-        logger.error(traceback.format_exc())  # Print full traceback
+        logger.error(traceback.format_exc())
     finally:
-        if await bot.is_connected:
+        if bot.is_connected:
             logger.info("🛑 Stopping bot...")
             await bot.stop()
             logger.info("🌸 Bot stopped gracefully.")
