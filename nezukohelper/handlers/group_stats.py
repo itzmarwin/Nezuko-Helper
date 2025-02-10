@@ -68,7 +68,7 @@ async def close_stats(_, query):
 @bot.on_message(
     (filters.group) & 
     (~filters.service) & 
-    (~filters.command) &  # ❌❌🚫 **() हटाएँ** 🚫❌❌
+    (~filters.command()) &  # ✅ सही syntax (command के साथ () use करें)
     (~filters.edited)
 )
 async def track_message(_, message: Message):
