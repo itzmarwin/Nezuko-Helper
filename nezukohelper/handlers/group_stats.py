@@ -68,8 +68,8 @@ async def close_stats(_, query):
 @bot.on_message(
     (filters.group) & 
     (~filters.service) & 
-    (~filters.command) &  # ✅ सही syntax
-    (~filters.edited)
+    (~filters.command()) &  # ✅ सही syntax
+    (~filters.edited())
 )
 async def track_message(_, message: Message):
     if not message.from_user:
