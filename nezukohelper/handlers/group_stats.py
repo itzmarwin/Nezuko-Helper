@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from nezukohelper.config import bot
 from nezukohelper.utils.database import messages
 from nezukohelper.utils.helpers import emoji
@@ -13,8 +13,8 @@ STATS_BUTTONS = InlineKeyboardMarkup([
 ])
 
 @bot.on_message(filters.command("gstat"))
-async def group_stats(_, message):
-    # Command handler में permission check जोड़ें
+async def group_stats(_, message: Message):
+    # सिर्फ groups में allow करें
     if message.chat.type not in ["group", "supergroup"]:
         return await message.reply("❌ This command works only in groups!")
     
@@ -32,7 +32,7 @@ async def show_stats(client, query):
         pipeline = []
         if timeframe == "today":
             pipeline.append({"$match": {
-                "chat_id": chat_id,  # Chat-specific data
+                "chat_id": chat_id,
                 "timestamp": {"$gte": time.time() - 86400}
             }})
         else:
@@ -45,12 +45,12 @@ async def show_stats(client, query):
         ])
 
         top_users = []
-        async for user in messages.aggregate(pipeline):
+        async for user_data in messages.aggregate(pipeline):
             try:
-                user_obj = await client.get_users(user["_id"])
-                top_users.append(f"• {user_obj.mention} » **{user['count']}**")
+                user = await client.get_users(user_data["_id"])
+                top_users.append(f"• {user.mention} » **{user_data['count']}**")
             except Exception as e:
-                print(f"Error fetching user {user['_id']}: {e}")
+                print(f"User Fetch Error: {e}")
         
         text = f"{emoji('🏆')} **Top 10 {'Today' if timeframe == 'today' else 'All-Time'}**\n\n"
         text += "\n".join(top_users) if top_users else "No data yet!"
@@ -70,10 +70,10 @@ async def close_stats(_, query):
     filters.group & 
     ~filters.service & 
     ~filters.command & 
-    ~filters.edited  # Edited messages को ignore करें
+    ~filters.edited  # ✅ Edited messages को ignore करें
 )
-async def track_message(_, message):
-    # Anonymous admins और channels को handle करें
+async def track_message(_, message: Message):
+    # Anonymous users (channels/admins) को skip करें
     if not message.from_user:
         return
     
@@ -84,4 +84,4 @@ async def track_message(_, message):
             "timestamp": time.time()
         })
     except Exception as e:
-        print(f"Database Error: {e}")
+        print(f"Database Insert Error: {e}")
